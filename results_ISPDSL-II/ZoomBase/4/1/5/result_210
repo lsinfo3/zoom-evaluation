@@ -1,0 +1,7 @@
+# Start: 210
+# Stop: 285
+# Total flows per cycle: 4
+# Top n flows per cycle: 1
+# Sleep between cycles: 5000
+
+122.157.149.200;255.255.255.255;172.141.74.73;255.255.255.255;365961
