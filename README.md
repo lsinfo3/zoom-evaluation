@@ -10,6 +10,7 @@ The main functionality of this set of scripts is to process results obtained by 
 
 # Authors
 Stefen Gebert -- stefen.gebert at informatik.uni-wuerzburg.de
+
 Stefan Geißler -- stefan.geissler at informatik.uni-wuerzburg.de
 
 # License
