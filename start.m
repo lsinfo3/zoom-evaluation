@@ -39,21 +39,23 @@ temp = struct('algorithm', algorithm, 'nflows', 2, 'ntop', 1, 'time', 5); resStr
 
 clear temp algorithm; % Clear temporary variables
 
-%% Evaluate Accuracy
+%% Process data to obtain the accuracy of the ZOOM algorithm
 
+% Define the criterion by which elephants are identified
 elephant_criterion = 'TOTAL';
 times_std = 1:50;
 
 for i=1:length(resStruct)
     % User Feedback
     disp(strcat(int2str(i), '/', int2str(length(resStruct))));
+    
     % Read files from directory of current parameter combination
     current_dir = strcat(input,'/', resStruct(i).algorithm, '/', num2str(resStruct(i).nflows), '/', num2str(resStruct(i).ntop), '/', num2str(resStruct(i).time), '/');    
     files = dir(current_dir);
     files = files(~[files.isdir]);
     files = sort_nat({files.name});
    
-
+    % Preallocate vectors for speed
     clear mean_accuracy fP_percent_vector fN_percent_vector;
     mean_accuracy_vector = zeros(length(times_std),1);
     elephant_count_vector = zeros(length(times_std),1);
@@ -61,9 +63,12 @@ for i=1:length(resStruct)
     elephant_threshold_vector = zeros(length(times_std),1);
     elephant_duration_vector = zeros(length(times_std),1);
     total_elephant_count_vector = zeros(length(times_std),1);
+    
     % Iterate over result files regarding the current parameter combination
     for u = times_std
-        elephant_threshold = mean(data{5})+u*std(data{5}); %  Flows larger than the average + x times the standard deviation are considered elephants
+        % Flows larger than the average + x times the standard deviation are considered elephants
+        elephant_threshold = mean(data{5})+u*std(data{5});
+        
         mean_accuracy = [];
         mean_recall = [];
         fP_percent_vector = [];
@@ -103,19 +108,23 @@ for i=1:length(resStruct)
                algo_indy = algo_indy(end-length(algo.src)+1:end); 
             end
             elephants_indy = getElephantIndices(active_flows, elephant_criterion, elephant_threshold); % Get elephants active at the current time
-
+            
+            % If elephants are currently active
             if (~isempty(elephants_indy))
                 found = intersect(elephants_indy, algo_indy); % Get elephants detected by the algorithm
-
-                fP_percent = ((resStruct(i).ntop - length(found)) / resStruct(i).ntop); % fP based on ntop
+                
+                % Calculate accuracy metrics
+                fP_percent = ((resStruct(i).ntop - length(found)) / resStruct(i).ntop);
                 fP_percent_vector = [fP_percent_vector fP_percent];
-                fN_percent = length(found) / length(elephants_indy); % fP based on active elephants
+                fN_percent = length(found) / length(elephants_indy);
                 fN_percent_vector = [fN_percent_vector fN_percent];
                 mean_accuracy = [mean_accuracy 1-fP_percent];
                 mean_recall = [mean_recall fN_percent];
                 mean_active_elephants_vector = [mean_active_elephants_vector length(elephants_indy)];
             end
         end
+        
+        % Assign values to vectors for later use
         mean_accuracy_vector(u) = mean(mean_accuracy);
         elephant_count_vector(u) = mean(mean_active_elephants_vector);
         mean_recall_vector(u) = mean(mean_recall);
@@ -132,6 +141,8 @@ for i=1:length(resStruct)
     final.(resStruct(i).algorithm).(['nflows',  num2str(resStruct(i).nflows)]).(['ntop', num2str(resStruct(i).ntop)]).(['time', num2str(resStruct(i).time)]).elephant_threshold = elephant_threshold_vector;
     final.(resStruct(i).algorithm).(['nflows',  num2str(resStruct(i).nflows)]).(['ntop', num2str(resStruct(i).ntop)]).(['time', num2str(resStruct(i).time)]).elephant_duration = elephant_duration_vector;
 end
+
+% Add information about the total number of elephants
 final.total_elephant_count = total_elephant_count_vector;
 
 % Save final struct to the disk for later reusal

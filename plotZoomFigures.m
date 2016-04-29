@@ -1,5 +1,8 @@
+%% Plot figures used in ZOOM evaluation
+% Load result struct containing accuracy data
 load('final_struct.mat'); output = 'figs/ispdsl';
 
+% Define config parameters
 close all;
 paperUnits = 'centimeters';
 printTitle = 0;
@@ -12,7 +15,7 @@ legendpos = 'NorthWest';
 if (~isdir(output))
     mkdir(output);
 end
-%% Plot stacked bar plots
+%% Stacked bar plots for different s_ele
 
 fig = figure(45);
 std1 = [final.ZoomBase.nflows16.ntop1.time1.accuracy(1) final.ZoomBase.nflows16.ntop1.time2.accuracy(1) final.ZoomBase.nflows16.ntop1.time5.accuracy(1) ...
@@ -40,23 +43,14 @@ set(gca,'YTick',0:0.2:1);
 ylim([0 1.2]);
 
 hl = legend('s_{ele} = 30', 's_{ele} = 10', 's_{ele} = 1', 'location', [0.518 0.875 0 0], 'orientation', 'horizontal');
-%v = get(hl,'title');
-%set(v,'string','s_{ele}');
 
 ylabel('Accuracy');
 xlabel('n_{top},t_{wait}');
 set(gca, 'Fontsize', fontsize);
-headsize = 3;
-% annotation(fig,'textarrow',[0.891 0.85],...
-%     [0.1 0.3],'String',{'s_{ele}=30'}, 'fontsize', fontsize-2, 'Headlength', headsize, 'headwidth', headsize);
-% annotation(fig,'textarrow',[0.84 0.83],...
-%     [0.84 0.73],'String',{'s_{ele}=1'}, 'fontsize', fontsize-2, 'Headlength', headsize, 'headwidth', headsize);
-% annotation(fig,'textarrow',[0.67 0.67],...
-%     [0.82 0.53],'String',{'s_{ele}=10'}, 'fontsize', fontsize-2, 'Headlength', headsize, 'headwidth', headsize);
 save2pdf(strcat(output, '/accuracy_for_elephantthreshold'), fig, dpi, fontsize, 0.5, [0 0 sizex sizey]);
 close(fig);
 
-%% Plot accuracy vs elephant count for n_flows = 16
+%% Plot accuracy vs elephant count and n_top for n_flows = 16
 
 fig = figure(27); hold on;
 box on; grid on;
@@ -223,7 +217,7 @@ close(fig);
 
 nflows = [2 4 16];
 ntop = [0 0 1; 0 2 1; 8 4 1];
-twait = [5];
+twait = [5]; % Adjust here to plot for 1, 2 or 5
 a_vec = zeros(30, 1);
 ci_vec = zeros(30, 1);
 c_vec = zeros(30, 1);
@@ -260,5 +254,5 @@ errorbar(1:30, a_vec, ci_vec, 'color', copper(1));
 xlim([0 31]);
 xlabel('Threshold in times std');
 ylabel('Accuracy');
-save2pdf(strcat(output, '/accuracy_by_treshold_twait5'), fig, dpi, fontsize, 1, [0 0 sizex sizey]);
+save2pdf(strcat(output, '/accuracy_by_treshold_twait', num2str(twait)), fig, dpi, fontsize, 1, [0 0 sizex sizey]);
 close(fig);

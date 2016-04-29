@@ -18,9 +18,10 @@
 %   (c) Gabe Hoffmann, gabe.hoffmann@gmail.com extended by chaostommy and
 %   Stefan Geißler
 %   Written 8/30/2007
-%   Revised 2015
 %   Revised 9/22/2007
 %   Revised 1/14/2007
+%   ...
+%   Revised 29.4.2016
  
 function save2pdf(pdfFileName,handle,dpi,fontsize,linewidth,pos)
  
